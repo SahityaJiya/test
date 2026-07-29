@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FlavourFleet - Gourmet Food Delivered Fast</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+        <span style="font-size: 1.5rem;">🚀</span>
+        <span>FlavourFleet</span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      
+      <div class="collapse navbar-collapse" id="navbarContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+          <li class="nav-item"><a class="nav-link" href="#hero">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="#menu">Menu</a></li>
+          <li class="nav-item"><a class="nav-link" href="#offers">Offers</a></li>
+          <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+        </ul>
+        <div class="search-box me-lg-3 mb-2 mb-lg-0">
+          <input type="text" id="navbarSearch" class="form-control" placeholder="Search menu, cuisine..." />
+        </div>
+        <a href="#cart" class="btn btn-primary d-inline-flex align-items-center gap-2">
+          <span>🛒 Cart</span>
+          <span class="badge bg-white text-dark rounded-pill" id="navCartCount">0</span>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section id="hero" class="hero-section mt-5 pt-5">
+    <div class="container my-4">
+      <div class="row align-items-center g-4">
+        <div class="col-lg-7">
+          <span class="hero-badge fw-bold mb-3">🔥 Fast 30-Min Delivery</span>
+          <h1 class="display-4 fw-extrabold text-dark mb-3">Delicious Food, Delivered To Your Doorstep</h1>
+          <p class="lead text-muted mb-4">Craving wood-fired pizzas, healthy bowls, or rich curries? FlavourFleet brings chef-crafted meals directly to you in record time.</p>
+          <div class="d-flex gap-3 flex-wrap">
+            <a href="#menu" class="btn btn-primary btn-lg">Explore Menu</a>
+            <a href="#offers" class="btn btn-outline-dark btn-lg">View Offers</a>
+          </div>
+        </div>
+        <div class="col-lg-5">
+          <div class="hero-card p-4">
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="hero-pill">Chef's Special</span>
+              <span class="fw-bold text-success">⭐ 4.9 (1.2k reviews)</span>
+            </div>
+            <div class="hero-plate">🍕</div>
+            <h3 class="fw-bold text-center mb-1">Smoky Pan Pizza</h3>
+            <p class="text-muted text-center small mb-3">Crispy crust, loaded pepperoni & melting mozzarella.</p>
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="fs-4 fw-bold text-dark">₹399</span>
+              <button class="btn btn-primary add-to-cart-btn" data-id="1">Add to Cart</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content Area: Menu & Cart -->
+  <section id="menu" class="py-5">
+    <div class="container">
+      <div class="row g-4">
+        
+        <!-- Left Column: Menu Items -->
+        <div class="col-lg-8">
+          <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+            <div>
+              <h2 class="fw-bold mb-1">Explore Our Menu</h2>
+              <p class="text-muted mb-0">Filtered choices prepared fresh on order</p>
+            </div>
+            
+            <!-- Category Filters -->
+            <div class="d-flex gap-2 flex-wrap">
+              <button class="filter-btn active" data-filter="all">All</button>
+              <button class="filter-btn" data-filter="veg">🌱 Veg</button>
+              <button class="filter-btn" data-filter="non-veg">🍗 Non-Veg</button>
+            </div>
+          </div>
+
+          <!-- Secondary Filters Row -->
+          <div class="row g-3 mb-4">
+            <div class="col-md-5">
+              <input type="text" id="menuSearch" class="form-control" placeholder="Search dish name..." />
+            </div>
+            <div class="col-md-3 col-6">
+              <select id="priceFilter" class="form-select">
+                <option value="all">All Prices</option>
+                <option value="budget">Under ₹250</option>
+                <option value="mid">₹250 - ₹500</option>
+                <option value="premium">Over ₹500</option>
+              </select>
+            </div>
+            <div class="col-md-4 col-6">
+              <select id="cuisineFilter" class="form-select">
+                <option value="all">All Cuisines</option>
+                <option value="Italian">Italian</option>
+                <option value="Indian">Indian</option>
+                <option value="Mediterranean">Mediterranean</option>
+                <option value="American">American</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Dynamic Menu Grid -->
+          <div id="menuGrid" class="row g-4"></div>
+        </div>
+
+        <!-- Right Column: Sticky Cart -->
+        <div class="col-lg-4" id="cart">
+          <div class="card cart-card p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h4 class="fw-bold mb-0">Your Cart</h4>
+              <span class="badge bg-primary fs-6" id="cartCount">0</span>
+            </div>
+            <hr class="my-2" />
+            
+            <!-- Dynamic Cart Items Container -->
+            <div id="cartItems" class="my-3" style="max-height: 360px; overflow-y: auto;"></div>
+
+            <div class="border-top pt-3">
+              <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted">Subtotal</span>
+                <span class="fw-bold" id="subtotal">₹0</span>
+              </div>
+              <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted">Delivery Fee</span>
+                <span class="fw-bold text-success">₹40</span>
+              </div>
+              <div class="d-flex justify-content-between mb-3">
+                <span class="text-muted">Taxes & Charges</span>
+                <span class="fw-bold">₹25</span>
+              </div>
+              <hr />
+              <div class="d-flex justify-content-between mb-4">
+                <span class="fs-5 fw-bold">Total</span>
+                <span class="fs-4 fw-bold text-primary" id="total">₹0</span>
+              </div>
+              <button id="checkoutBtn" class="btn btn-primary w-100 py-2 fs-5">Proceed to Checkout ➔</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Offers Carousel Section -->
+  <section id="offers" class="section-soft py-5">
+    <div class="container">
+      <h2 class="fw-bold text-center mb-4">Current Deals & Offers</h2>
+      <div id="offerCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+          <div class="carousel-item active">
+            <div class="offer-slide text-center">
+              <span class="badge bg-dark mb-2">LIMITED TIME</span>
+              <h3 class="fw-bold text-dark">Get 20% OFF on First Order</h3>
+              <p class="text-muted">Use code <strong class="text-primary">FLEET20</strong> at checkout</p>
+            </div>
+          </div>
+          <div class="carousel-item">
+            <div class="offer-slide text-center">
+              <span class="badge bg-dark mb-2">FREEBIE</span>
+              <h3 class="fw-bold text-dark">Free Delivery on Orders Over ₹499</h3>
+              <p class="text-muted">Automatic discount applied in your cart</p>
+            </div>
+          </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#offerCarousel" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon bg-dark rounded-circle" aria-hidden="true"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#offerCarousel" data-bs-slide="next">
+          <span class="carousel-control-next-icon bg-dark rounded-circle" aria-hidden="true"></span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Support / Contact Section -->
+  <section id="contact" class="py-5">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+          <div class="card p-4 shadow-sm border-0 rounded-4">
+            <h3 class="fw-bold mb-2">Contact Support</h3>
+            <p class="text-muted mb-4">Have questions regarding your order? Send us a quick note.</p>
+            <form id="contactForm">
+              <div class="mb-3">
+                <label for="contactName" class="form-label fw-semibold">Name</label>
+                <input type="text" id="contactName" class="form-control" placeholder="John Doe" required />
+              </div>
+              <div class="mb-3">
+                <label for="contactEmail" class="form-label fw-semibold">Email</label>
+                <input type="email" id="contactEmail" class="form-control" placeholder="john@example.com" required />
+              </div>
+              <div class="mb-3">
+                <label for="contactMessage" class="form-label fw-semibold">Message</label>
+                <textarea id="contactMessage" class="form-control" rows="4" placeholder="How can we help?" required></textarea>
+              </div>
+              <button type="submit" class="btn btn-dark w-100">Send Support Request</button>
+              <div id="formStatus" class="form-text mt-2 text-center text-primary"></div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quick View Modal -->
+  <div class="modal fade" id="itemModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 rounded-4 shadow">
+        <div class="modal-header border-0">
+          <h5 class="modal-title fw-bold" id="modalTitle">Dish Details</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="modalBody"></div>
+        <div class="modal-footer border-0">
+          <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" id="modalAddBtn">Add to Cart</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Checkout & Payment Method Modal -->
+  <div class="modal fade" id="checkoutModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 rounded-4 shadow">
+        <div class="modal-header border-0">
+          <h5 class="modal-title fw-bold">Select Payment Method</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="paymentForm">
+            <div class="payment-options mb-3">
+              <label class="option-label selected mb-2 p-3 border rounded-3 d-flex align-items-center w-100" id="label-cod" style="cursor: pointer;">
+                <input type="radio" name="paymentMethod" value="Cash on Delivery" checked onchange="togglePayment('cod')" class="me-2">
+                <span>Cash on Delivery (COD)</span>
+              </label>
+              
+              <label class="option-label p-3 border rounded-3 d-flex align-items-center w-100" id="label-online" style="cursor: pointer;">
+                <input type="radio" name="paymentMethod" value="Pay Online" onchange="togglePayment('online')" class="me-2">
+                <span>Pay Online (Card / UPI)</span>
+              </label>
+            </div>
+
+            <!-- Online Payment Details (Hidden by default) -->
+            <div class="payment-details mb-3" id="onlineDetails" style="display: none;">
+              <label class="form-label fw-semibold text-muted small">Card Number / UPI ID</label>
+              <input type="text" id="onlineInput" class="form-control" placeholder="e.g. 4532 XXXX XXXX or user@upi">
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 py-2 fs-5 mt-2">Confirm & Place Order</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Confirmation Pop-up Modal -->
+  <div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 rounded-4 shadow text-center p-4">
+        <div class="modal-body">
+          <div class="icon-circle bg-success text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 60px; height: 60px; font-size: 1.8rem;">✓</div>
+          <h3 class="fw-bold mb-2">Order Placed!</h3>
+          <p id="modalMessage" class="text-muted mb-4">Your order has been placed successfully.</p>
+          <button type="button" class="btn btn-primary w-100 py-2" data-bs-dismiss="modal">Done</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="liveToast" class="custom-toast d-none">
+      <span id="toastIcon">✨</span>
+      <span id="toastMessage">Item added to cart!</span>
+    </div>
+  </div>
+
+  <!-- Bootstrap 5 JavaScript Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Custom JS -->
+  <script src="script.js"></script>
+</body>
+</html>

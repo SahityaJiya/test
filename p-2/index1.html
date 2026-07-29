@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BiteDash | Express Food Delivery</title>
+  <!-- Bootstrap 5.3 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-dark: #0f172a;          /* Deep slate background */
+      --card-bg: #1e293b;          /* Surface color */
+      --card-hover-bg: #283548;    /* Elevated surface on hover */
+      --accent-orange: #ff5e3a;    /* High-energy primary CTA */
+      --accent-hover: #e04826;     /* Primary button hover state */
+      --accent-gold: #fbbf24;      /* Star ratings & highlights */
+      --text-muted: #94a3b8;       /* Subtle text */
+      --border-color: #334155;     /* Dividers */
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: #f8fafc;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg-dark); }
+    ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
+
+    /* Glassmorphism Navigation */
+    .navbar-glass {
+      background: rgba(15, 23, 42, 0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .brand-logo {
+      color: var(--accent-orange);
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    /* Buttons & Interactive Elements */
+    .btn-orange {
+      background-color: var(--accent-orange);
+      color: #ffffff;
+      font-weight: 600;
+      border: none;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .btn-orange:hover, .btn-orange:active {
+      background-color: var(--accent-hover);
+      color: #ffffff;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(255, 94, 58, 0.35);
+    }
+
+    /* Quick Category Cards */
+    .cat-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 12px 20px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+    .cat-card:hover {
+      border-color: var(--accent-orange);
+      background-color: var(--card-hover-bg);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 16px -4px rgba(255, 94, 58, 0.2);
+    }
+
+    /* Food & Restaurant Cards - Advanced Hover Animations */
+    .food-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+    }
+    
+    .food-card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(255, 94, 58, 0.5);
+      box-shadow: 0 16px 32px -8px rgba(255, 94, 58, 0.25);
+      background-color: var(--card-hover-bg);
+    }
+
+    /* Image Zoom on Card Hover */
+    .card-img-container {
+      overflow: hidden;
+      height: 210px;
+      position: relative;
+    }
+    .food-card .card-img-top {
+      height: 100%;
+      width: 100%;
+      object-fit: cover;
+      transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+    }
+    .food-card:hover .card-img-top {
+      transform: scale(1.08);
+    }
+
+    /* Carousel */
+    .hero-carousel {
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+    }
+    .carousel-item { height: 360px; }
+    .carousel-item img { object-fit: cover; height: 100%; filter: brightness(0.65); }
+
+    /* Badges */
+    .diet-badge {
+      font-size: 0.72rem;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-weight: 700;
+    }
+    .diet-veg {
+      background: rgba(34, 197, 94, 0.15);
+      color: #4ade80;
+      border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+    .diet-nonveg {
+      background: rgba(239, 68, 68, 0.15);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .rating-badge {
+      background: rgba(251, 191, 36, 0.15);
+      color: var(--accent-gold);
+      font-weight: 700;
+      font-size: 0.85rem;
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+
+    /* Filters */
+    .filter-box {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+    }
+
+    /* Offcanvas Cart */
+    .offcanvas { background-color: var(--card-bg); border-left: 1px solid var(--border-color); }
+    .cart-item-img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; }
+
+    /* Section Headings */
+    .section-title {
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      position: relative;
+      display: inline-block;
+    }
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: 0;
+      width: 40%;
+      height: 3px;
+      background: var(--accent-orange);
+      border-radius: 2px;
+    }
+  </style>
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+  <!-- ==================== 1. NAVIGATION BAR ==================== -->
+  <nav class="navbar navbar-expand-lg sticky-top navbar-glass py-3">
+    <div class="container">
+      <a class="navbar-brand brand-logo fs-3 d-flex align-items-center gap-2" href="#">
+        <i class="bi bi-fire text-orange"></i> BiteDash
+      </a>
+      
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse mt-3 mt-lg-0" id="navbarContent">
+        <!-- Live Search Bar -->
+        <div class="mx-auto w-100 max-w-md my-2 my-lg-0 px-lg-4">
+          <div class="input-group">
+            <span class="input-group-text bg-dark border-secondary text-secondary">
+              <i class="bi bi-search"></i>
+            </span>
+            <input type="text" id="searchInput" class="form-control bg-dark border-secondary text-white" placeholder="Search pizza, tacos, ramen, burgers...">
+          </div>
+        </div>
+
+        <!-- Navigation Links -->
+        <ul class="navbar-nav me-auto me-lg-0 align-items-lg-center gap-lg-3">
+          <li class="nav-item"><a class="nav-link text-white fw-medium" href="#offers">Offers</a></li>
+          <li class="nav-item"><a class="nav-link text-white fw-medium" href="#restaurants">Top Spots</a></li>
+          <li class="nav-item"><a class="nav-link text-white fw-medium" href="#menu">Menu</a></li>
+          <li class="nav-item"><a class="nav-link text-white fw-medium" href="#contact">Contact</a></li>
+        </ul>
+
+        <button class="btn btn-orange rounded-pill px-4 d-flex align-items-center gap-2 mt-3 mt-lg-0 ms-lg-3" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas">
+          <i class="bi bi-bag-fill"></i>
+          <span>Cart</span>
+          <span class="badge bg-white text-dark rounded-circle ms-1" id="cartCount">0</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container my-4 flex-grow-1">
+
+    <!-- ==================== 2. OFFERS SECTION (CAROUSEL) ==================== -->
+    <section id="offers" class="mb-5">
+      <div id="offerCarousel" class="carousel slide hero-carousel shadow-lg" data-bs-ride="carousel">
+        <div class="carousel-indicators">
+          <button type="button" data-bs-target="#offerCarousel" data-bs-slide-to="0" class="active"></button>
+          <button type="button" data-bs-target="#offerCarousel" data-bs-slide-to="1"></button>
+          <button type="button" data-bs-target="#offerCarousel" data-bs-slide-to="2"></button>
+        </div>
+        <div class="carousel-inner">
+          <div class="carousel-item active">
+            <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=1200&q=80" class="d-block w-100" alt="Pizza Discount">
+            <div class="carousel-caption text-start">
+              <span class="badge bg-warning text-dark fw-bold mb-2">WEEKEND SPECIAL</span>
+              <h1 class="display-5 fw-bold text-white">50% OFF Artisanal Pizzas</h1>
+              <p class="fs-5 text-light d-none d-md-block">Use promo code <strong class="text-warning">PIZZAFEST</strong> at checkout.</p>
+            </div>
+          </div>
+          <div class="carousel-item">
+            <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1200&q=80" class="d-block w-100" alt="Burgers Offer">
+            <div class="carousel-caption text-start">
+              <span class="badge bg-danger fw-bold mb-2">BUY 1 GET 1</span>
+              <h1 class="display-5 fw-bold text-white">Smash Burger Craze</h1>
+              <p class="fs-5 text-light d-none d-md-block">Handcrafted gourmet beef & veg burgers delivered fast.</p>
+            </div>
+          </div>
+          <div class="carousel-item">
+            <img src="https://images.unsplash.com/photo-1579871494447-9811cf80d66c?auto=format&fit=crop&w=1200&q=80" class="d-block w-100" alt="Sushi Deal">
+            <div class="carousel-caption text-start">
+              <span class="badge bg-info text-dark fw-bold mb-2">FREE DELIVERY</span>
+              <h1 class="display-5 fw-bold text-white">Fresh Asian Delights</h1>
+              <p class="fs-5 text-light d-none d-md-block">Zero delivery fee on all orders over $25 today!</p>
+            </div>
+          </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#offerCarousel" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#offerCarousel" data-bs-slide="next">
+          <span class="carousel-control-next-icon"></span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ==================== 3. QUICK CATEGORY PICKER ==================== -->
+    <section class="mb-5">
+      <h3 class="section-title mb-4">Popular Categories</h3>
+      <div class="d-flex gap-3 overflow-x-auto pb-2">
+        <div class="cat-card d-flex align-items-center gap-3" onclick="quickFilter('Italian')">
+          <i class="bi bi-pie-chart-fill text-warning fs-3"></i>
+          <div>
+            <h6 class="mb-0 fw-bold">Italian</h6>
+            <small class="text-secondary">Pizzas & Pastas</small>
+          </div>
+        </div>
+        <div class="cat-card d-flex align-items-center gap-3" onclick="quickFilter('American')">
+          <i class="bi bi-box-seam-fill text-danger fs-3"></i>
+          <div>
+            <h6 class="mb-0 fw-bold">American</h6>
+            <small class="text-secondary">Burgers & Fries</small>
+          </div>
+        </div>
+        <div class="cat-card d-flex align-items-center gap-3" onclick="quickFilter('Japanese')">
+          <i class="bi bi-cup-hot-fill text-info fs-3"></i>
+          <div>
+            <h6 class="mb-0 fw-bold">Japanese</h6>
+            <small class="text-secondary">Sushi & Ramen</small>
+          </div>
+        </div>
+        <div class="cat-card d-flex align-items-center gap-3" onclick="quickFilter('Mexican')">
+          <i class="bi bi-lightning-charge-fill text-success fs-3"></i>
+          <div>
+            <h6 class="mb-0 fw-bold">Mexican</h6>
+            <small class="text-secondary">Tacos & Burritos</small>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 4. TOP RESTAURANTS ==================== -->
+    <section id="restaurants" class="mb-5">
+      <h3 class="section-title mb-4">Featured Restaurants</h3>
+      <div class="row g-4">
+        <div class="col-12 col-md-4">
+          <div class="food-card p-3 d-flex align-items-center gap-3">
+            <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=150&q=80" class="rounded-3" width="80" height="80" alt="The Italian Bistro">
+            <div>
+              <h5 class="fw-bold mb-1">The Italian Bistro</h5>
+              <p class="text-secondary small mb-1">Pasta, Pizza, Italian</p>
+              <div class="d-flex align-items-center gap-2">
+                <span class="rating-badge"><i class="bi bi-star-fill me-1"></i>4.8</span>
+                <span class="text-secondary small">• 25-35 mins</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-md-4">
+          <div class="food-card p-3 d-flex align-items-center gap-3">
+            <img src="https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=150&q=80" class="rounded-3" width="80" height="80" alt="Burger Lounge">
+            <div>
+              <h5 class="fw-bold mb-1">Burger Lounge</h5>
+              <p class="text-secondary small mb-1">American, Fast Food</p>
+              <div class="d-flex align-items-center gap-2">
+                <span class="rating-badge"><i class="bi bi-star-fill me-1"></i>4.6</span>
+                <span class="text-secondary small">• 15-25 mins</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-md-4">
+          <div class="food-card p-3 d-flex align-items-center gap-3">
+            <img src="https://images.unsplash.com/photo-1611143669185-af224c5e3252?auto=format&fit=crop&w=150&q=80" class="rounded-3" width="80" height="80" alt="Sakura Sushi">
+            <div>
+              <h5 class="fw-bold mb-1">Sakura Sushi</h5>
+              <p class="text-secondary small mb-1">Japanese, Healthy</p>
+              <div class="d-flex align-items-center gap-2">
+                <span class="rating-badge"><i class="bi bi-star-fill me-1"></i>4.9</span>
+                <span class="text-secondary small">• 30-40 mins</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 5. MENU SECTION & FILTERING ==================== -->
+    <section id="menu" class="mb-5">
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <h3 class="section-title m-0">Explore Menu</h3>
+        <span class="text-secondary small" id="itemsCount">Showing all items</span>
+      </div>
+
+      <!-- Interactive Controls -->
+      <div class="filter-box p-3 mb-4">
+        <div class="row g-3 align-items-center">
+          <div class="col-12 col-md-5">
+            <div class="btn-group w-100" role="group">
+              <button class="btn btn-outline-light active filter-btn" data-type="diet" data-value="all">All</button>
+              <button class="btn btn-outline-light filter-btn" data-type="diet" data-value="veg">Veg</button>
+              <button class="btn btn-outline-light filter-btn" data-type="diet" data-value="non-veg">Non-Veg</button>
+            </div>
+          </div>
+
+          <div class="col-6 col-md-4">
+            <select id="cuisineSelect" class="form-select bg-dark border-secondary text-white">
+              <option value="all">All Cuisines</option>
+              <option value="Italian">Italian</option>
+              <option value="American">American</option>
+              <option value="Japanese">Japanese</option>
+              <option value="Mexican">Mexican</option>
+            </select>
+          </div>
+
+          <div class="col-6 col-md-3">
+            <select id="priceSort" class="form-select bg-dark border-secondary text-white">
+              <option value="default">Sort by Price</option>
+              <option value="low">Low to High</option>
+              <option value="high">High to Low</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Food Grid -->
+      <div class="row g-4" id="foodContainer">
+        <!-- Rendered via JavaScript -->
+      </div>
+    </section>
+
+    <!-- ==================== 6. CONTACT SECTION ==================== -->
+    <section id="contact" class="mb-5">
+      <div class="filter-box p-4 p-md-5">
+        <div class="row g-4 align-items-center">
+          <div class="col-lg-6">
+            <h3 class="section-title mb-3">Get in Touch</h3>
+            <p class="text-secondary mb-4">Have questions about your order or want to partner your restaurant with BiteDash? Send us a message!</p>
+            <div class="d-flex flex-column gap-3">
+              <div class="d-flex align-items-center gap-3">
+                <i class="bi bi-geo-alt-fill text-orange fs-4"></i>
+                <span>123 Culinary Boulevard, Foodville, FC 90210</span>
+              </div>
+              <div class="d-flex align-items-center gap-3">
+                <i class="bi bi-telephone-fill text-orange fs-4"></i>
+                <span>+1 (800) 555-BITEDASH</span>
+              </div>
+              <div class="d-flex align-items-center gap-3">
+                <i class="bi bi-envelope-fill text-orange fs-4"></i>
+                <span>support@bitedash.com</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <form id="contactForm">
+              <div class="mb-3">
+                <input type="text" class="form-control bg-dark border-secondary text-white" placeholder="Your Name" required>
+              </div>
+              <div class="mb-3">
+                <input type="email" class="form-control bg-dark border-secondary text-white" placeholder="Email Address" required>
+              </div>
+              <div class="mb-3">
+                <textarea class="form-control bg-dark border-secondary text-white" rows="4" placeholder="Your Message..." required></textarea>
+              </div>
+              <button type="submit" class="btn btn-orange w-100 py-2">Send Message</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="mt-auto border-top border-secondary py-4 text-center text-secondary small">
+    <div class="container">
+      <p class="mb-0">&copy; 2026 BiteDash Food Delivery System. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- CART OFFCANVAS -->
+  <div class="offcanvas offcanvas-end" tabindex="-1" id="cartOffcanvas">
+    <div class="offcanvas-header border-bottom border-secondary">
+      <h5 class="offcanvas-title fw-bold"><i class="bi bi-cart3 text-orange me-2"></i>Your Order</h5>
+      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body d-flex flex-column">
+      <div id="cartList" class="flex-grow-1 overflow-auto pe-1">
+        <!-- Rendered via JS -->
+      </div>
+      <div class="border-top border-secondary pt-3 mt-3">
+        <div class="d-flex justify-content-between mb-2">
+          <span class="text-secondary">Subtotal</span>
+          <span id="cartSubtotal" class="fw-bold">$0.00</span>
+        </div>
+        <div class="d-flex justify-content-between mb-2">
+          <span class="text-secondary">Delivery Fee</span>
+          <span id="cartDelivery" class="fw-bold">$2.99</span>
+        </div>
+        <hr class="border-secondary">
+        <div class="d-flex justify-content-between mb-4">
+          <span class="fs-5 fw-bold">Total</span>
+          <span id="cartTotal" class="fs-5 fw-bold text-orange">$0.00</span>
+        </div>
+        <button class="btn btn-orange w-100 py-3 fw-bold rounded-3" id="checkoutBtn" onclick="checkout()">
+          Proceed to Checkout
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ITEM DETAILS MODAL -->
+  <div class="modal fade" id="itemModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-secondary" style="background-color: var(--card-bg);">
+        <div class="modal-body p-0">
+          <img id="modalImg" src="" class="w-100" style="height: 220px; object-fit: cover;" alt="Food detail">
+          <div class="p-4">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <h4 id="modalTitle" class="fw-bold m-0">Item Title</h4>
+              <span id="modalDiet" class="diet-badge">VEG</span>
+            </div>
+            <p id="modalDesc" class="text-secondary small mb-3">Item description goes here...</p>
+            <div class="d-flex justify-content-between align-items-center">
+              <span id="modalPrice" class="fs-4 fw-bold text-orange">$0.00</span>
+              <button id="modalAddBtn" class="btn btn-orange px-4 rounded-pill">Add to Cart</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap 5.3 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Application Logic -->
+  <script>
+    // --- Expanded Menu Dataset ---
+    const menuItems = [
+      {
+        id: 1,
+        title: "Truffle Mushroom Pizza",
+        cuisine: "Italian",
+        type: "veg",
+        price: 18.99,
+        rating: 4.9,
+        image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=600&q=80",
+        desc: "Wild mushrooms, white truffle oil, mozzarella, and fresh arugula on wood-fired crust."
+      },
+      {
+        id: 2,
+        title: "Double Bacon Cheeseburger",
+        cuisine: "American",
+        type: "non-veg",
+        price: 14.50,
+        rating: 4.7,
+        image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=600&q=80",
+        desc: "Two smashed Angus beef patties, smoked bacon, cheddar cheese, and house sauce."
+      },
+      {
+        id: 3,
+        title: "Salmon Nigiri Set",
+        cuisine: "Japanese",
+        type: "non-veg",
+        price: 22.00,
+        rating: 4.9,
+        image: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?auto=format&fit=crop&w=600&q=80",
+        desc: "Fresh Atlantic salmon over seasoned sushi rice with wasabi and pickled ginger."
+      },
+      {
+        id: 4,
+        title: "Street Style Tacos",
+        cuisine: "Mexican",
+        type: "non-veg",
+        price: 11.50,
+        rating: 4.8,
+        image: "https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?auto=format&fit=crop&w=600&q=80",
+        desc: "Three slow-cooked beef tacos with cilantro, onions, lime, and spicy salsa verde."
+      },
+      {
+        id: 5,
+        title: "Classic Creamy Carbonara",
+        cuisine: "Italian",
+        type: "non-veg",
+        price: 16.25,
+        rating: 4.6,
+        image: "https://images.unsplash.com/photo-1612874742237-6526221588e3?auto=format&fit=crop&w=600&q=80",
+        desc: "Spaghetti with crispy guanciale, egg yolk, Pecorino Romano, and cracked black pepper."
+      },
+      {
+        id: 6,
+        title: "Tonkotsu Pork Ramen",
+        cuisine: "Japanese",
+        type: "non-veg",
+        price: 15.99,
+        rating: 4.9,
+        image: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=600&q=80",
+        desc: "Rich pork bone broth, tender chashu pork, soft-boiled egg, and fresh ramen noodles."
+      },
+      {
+        id: 7,
+        title: "Cheesy Quesadilla",
+        cuisine: "Mexican",
+        type: "veg",
+        price: 10.99,
+        rating: 4.5,
+        image: "https://images.unsplash.com/photo-1618040996337-56904b7850b9?auto=format&fit=crop&w=600&q=80",
+        desc: "Grilled flour tortilla stuffed with melted Monterey Jack, peppers, and salsa."
+      },
+      {
+        id: 8,
+        title: "Avocado Power Bowl",
+        cuisine: "American",
+        type: "veg",
+        price: 12.99,
+        rating: 4.8,
+        image: "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=600&q=80",
+        desc: "Quinoa, fresh avocado, edamame, roasted chickpeas, and tahini dressing."
+      },
+      {
+        id: 9,
+        title: "Margherita Supreme",
+        cuisine: "Italian",
+        type: "veg",
+        price: 14.99,
+        rating: 4.7,
+        image: "https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?auto=format&fit=crop&w=600&q=80",
+        desc: "San Marzano tomato sauce, fresh mozzarella di bufala, fresh basil, and olive oil."
+      }
+    ];
+
+    // State
+    let cart = [];
+    let activeDiet = 'all';
+
+    // DOM Elements
+    const foodContainer = document.getElementById('foodContainer');
+    const searchInput = document.getElementById('searchInput');
+    const cuisineSelect = document.getElementById('cuisineSelect');
+    const priceSort = document.getElementById('priceSort');
+    const itemsCount = document.getElementById('itemsCount');
+    
+    const cartCount = document.getElementById('cartCount');
+    const cartList = document.getElementById('cartList');
+    const cartSubtotal = document.getElementById('cartSubtotal');
+    const cartTotal = document.getElementById('cartTotal');
+
+    const itemModal = new bootstrap.Modal(document.getElementById('itemModal'));
+
+    // Render Function
+    function renderMenu() {
+      const searchTerm = searchInput.value.toLowerCase().trim();
+      const selectedCuisine = cuisineSelect.value;
+      const sortOrder = priceSort.value;
+
+      let filtered = menuItems.filter(item => {
+        const matchesSearch = item.title.toLowerCase().includes(searchTerm) || 
+                              item.cuisine.toLowerCase().includes(searchTerm);
+        const matchesDiet = activeDiet === 'all' || item.type === activeDiet;
+        const matchesCuisine = selectedCuisine === 'all' || item.cuisine === selectedCuisine;
+        
+        return matchesSearch && matchesDiet && matchesCuisine;
+      });
+
+      if (sortOrder === 'low') filtered.sort((a, b) => a.price - b.price);
+      else if (sortOrder === 'high') filtered.sort((a, b) => b.price - a.price);
+
+      itemsCount.textContent = `Showing ${filtered.length} of ${menuItems.length} items`;
+
+      if (filtered.length === 0) {
+        foodContainer.innerHTML = `
+          <div class="col-12 text-center py-5">
+            <i class="bi bi-search text-secondary display-1"></i>
+            <h5 class="mt-3 text-secondary">No dishes match your filters</h5>
+          </div>`;
+        return;
+      }
+
+      foodContainer.innerHTML = filtered.map(item => `
+        <div class="col-12 col-md-6 col-lg-4">
+          <div class="food-card h-100 d-flex flex-column">
+            <div class="card-img-container">
+              <img src="${item.image}" class="card-img-top" alt="${item.title}">
+            </div>
+            <div class="card-body p-4 d-flex flex-column justify-content-between">
+              <div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="diet-badge ${item.type === 'veg' ? 'diet-veg' : 'diet-nonveg'}">
+                    ${item.type.toUpperCase()}
+                  </span>
+                  <span class="rating-badge"><i class="bi bi-star-fill me-1"></i>${item.rating}</span>
+                </div>
+                <h5 class="fw-bold mb-1">${item.title}</h5>
+                <p class="text-secondary small mb-3">${item.desc}</p>
+              </div>
+              <div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <span class="fs-4 fw-bold text-orange">$${item.price.toFixed(2)}</span>
+                  <span class="badge bg-dark border border-secondary text-secondary">${item.cuisine}</span>
+                </div>
+                <div class="d-flex gap-2">
+                  <button class="btn btn-outline-light btn-sm flex-grow-1" onclick="openModal(${item.id})">Details</button>
+                  <button class="btn btn-orange btn-sm flex-grow-1" onclick="addToCart(${item.id})">Add to Cart</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Quick Category Filter Helper
+    function quickFilter(cuisine) {
+      cuisineSelect.value = cuisine;
+      renderMenu();
+      document.getElementById('menu').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Filter Handlers
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        activeDiet = e.target.dataset.value;
+        renderMenu();
+      });
+    });
+
+    searchInput.addEventListener('input', renderMenu);
+    cuisineSelect.addEventListener('change', renderMenu);
+    priceSort.addEventListener('change', renderMenu);
+
+    // Cart Functions
+    function addToCart(id) {
+      const existing = cart.find(item => item.id === id);
+      if (existing) {
+        existing.qty += 1;
+      } else {
+        const item = menuItems.find(m => m.id === id);
+        cart.push({ ...item, qty: 1 });
+      }
+      updateCartUI();
+    }
+
+    function updateQty(id, delta) {
+      const item = cart.find(i => i.id === id);
+      if (item) {
+        item.qty += delta;
+        if (item.qty <= 0) cart = cart.filter(i => i.id !== id);
+      }
+      updateCartUI();
+    }
+
+    function updateCartUI() {
+      const totalCount = cart.reduce((sum, item) => sum + item.qty, 0);
+      cartCount.textContent = totalCount;
+
+      if (cart.length === 0) {
+        cartList.innerHTML = `
+          <div class="text-center py-5 text-secondary">
+            <i class="bi bi-cart-x fs-1"></i>
+            <p class="mt-2">Your cart is empty.</p>
+          </div>`;
+        cartSubtotal.textContent = "$0.00";
+        cartTotal.textContent = "$0.00";
+        return;
+      }
+
+      cartList.innerHTML = cart.map(item => `
+        <div class="d-flex align-items-center gap-3 mb-3 p-2 rounded-3 bg-dark border border-secondary">
+          <img src="${item.image}" class="cart-item-img" alt="${item.title}">
+          <div class="flex-grow-1">
+            <h6 class="mb-0 fw-bold">${item.title}</h6>
+            <small class="text-orange">$${(item.price * item.qty).toFixed(2)}</small>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <button class="btn btn-sm btn-outline-secondary px-2 py-0" onclick="updateQty(${item.id}, -1)">-</button>
+            <span class="small fw-bold">${item.qty}</span>
+            <button class="btn btn-sm btn-outline-secondary px-2 py-0" onclick="updateQty(${item.id}, 1)">+</button>
+          </div>
+        </div>
+      `).join('');
+
+      const sub = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+      const delivery = sub > 0 ? 2.99 : 0;
+      cartSubtotal.textContent = `$${sub.toFixed(2)}`;
+      cartTotal.textContent = `$${(sub + delivery).toFixed(2)}`;
+    }
+
+    // Modal Details Handler
+    function openModal(id) {
+      const item = menuItems.find(m => m.id === id);
+      document.getElementById('modalImg').src = item.image;
+      document.getElementById('modalTitle').textContent = item.title;
+      document.getElementById('modalDesc').textContent = item.desc;
+      document.getElementById('modalPrice').textContent = `$${item.price.toFixed(2)}`;
+      
+      const dietBadge = document.getElementById('modalDiet');
+      dietBadge.textContent = item.type.toUpperCase();
+      dietBadge.className = `diet-badge ${item.type === 'veg' ? 'diet-veg' : 'diet-nonveg'}`;
+
+      const addBtn = document.getElementById('modalAddBtn');
+      addBtn.onclick = () => {
+        addToCart(item.id);
+        itemModal.hide();
+      };
+
+      itemModal.show();
+    }
+
+    function checkout() {
+      if (cart.length === 0) return alert('Your cart is empty!');
+      alert('Order Placed Successfully! Thank you for ordering with BiteDash.');
+      cart = [];
+      updateCartUI();
+      bootstrap.Offcanvas.getInstance(document.getElementById('cartOffcanvas')).hide();
+    }
+
+    document.getElementById('contactForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      alert('Thank you! Your message has been sent successfully.');
+      e.target.reset();
+    });
+
+    renderMenu();
+  </script>
+</body>
+</html>
