@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Dashboard</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Segoe UI,sans-serif;
+}
+
+body{
+background:#f4f7fb;
+}
+
+header{
+background:#0072ff;
+color:white;
+padding:20px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.logout{
+padding:10px 20px;
+background:red;
+border:none;
+color:white;
+cursor:pointer;
+border-radius:8px;
+}
+
+.container{
+
+padding:40px;
+
+}
+
+.cards{
+
+display:grid;
+
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+
+gap:25px;
+
+}
+
+.card{
+
+background:white;
+
+padding:30px;
+
+border-radius:15px;
+
+box-shadow:0 8px 20px rgba(0,0,0,.15);
+
+transition:.3s;
+
+}
+
+.card:hover{
+
+transform:translateY(-10px);
+
+}
+
+.card h2{
+
+color:#0072ff;
+
+margin-bottom:10px;
+
+}
+
+.card p{
+
+color:#666;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<h1>Dashboard</h1>
+
+<button class="logout" onclick="logout()">
+
+Logout
+
+</button>
+
+</header>
+
+<div class="container">
+
+<div class="cards">
+
+<div class="card">
+
+<h2>Profile</h2>
+
+<p>Manage your profile information.</p>
+
+</div>
+
+<div class="card">
+
+<h2>Orders</h2>
+
+<p>View all your orders.</p>
+
+</div>
+
+<div class="card">
+
+<h2>Settings</h2>
+
+<p>Update your account settings.</p>
+
+</div>
+
+<div class="card">
+
+<h2>Notifications</h2>
+
+<p>Check recent notifications.</p>
+
+</div>
+
+<div class="card">
+
+<h2>Reports</h2>
+
+<p>View dashboard reports.</p>
+
+</div>
+
+<div class="card">
+
+<h2>Support</h2>
+
+<p>Contact support anytime.</p>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+function logout(){
+
+if(confirm("Do you want to logout?")){
+
+window.location="login.html";
+
+}
+
+}
+
+</script>
+
+</body>
+
+</html>

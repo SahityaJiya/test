@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Segoe UI,sans-serif;
+}
+
+body{
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+background:linear-gradient(135deg,#667eea,#764ba2,#6dd5fa);
+background-size:400% 400%;
+animation:bg 10s infinite alternate;
+}
+
+@keyframes bg{
+0%{background-position:left;}
+100%{background-position:right;}
+}
+
+.container{
+width:380px;
+background:rgba(255,255,255,.15);
+backdrop-filter:blur(15px);
+padding:40px;
+border-radius:20px;
+box-shadow:0 10px 30px rgba(0,0,0,.3);
+color:white;
+}
+
+h1{
+text-align:center;
+margin-bottom:25px;
+}
+
+input{
+width:100%;
+padding:14px;
+margin:12px 0;
+border:none;
+outline:none;
+border-radius:10px;
+font-size:16px;
+}
+
+button{
+width:100%;
+padding:14px;
+border:none;
+background:#00d4ff;
+color:white;
+font-size:18px;
+border-radius:10px;
+cursor:pointer;
+transition:.3s;
+}
+
+button:hover{
+background:#0099cc;
+transform:scale(1.03);
+}
+
+a{
+color:#fff;
+text-decoration:none;
+}
+
+p{
+margin-top:20px;
+text-align:center;
+}
+
+.error{
+color:yellow;
+font-size:14px;
+margin-bottom:10px;
+}
+
+.eye{
+cursor:pointer;
+position:absolute;
+right:15px;
+top:15px;
+color:black;
+}
+
+.passbox{
+position:relative;
+}
+
+</style>
+
+</head>
+<body>
+
+<div class="container">
+
+<h1>Login</h1>
+
+<div id="error" class="error"></div>
+
+<input type="email" id="email" placeholder="Email">
+
+<div class="passbox">
+<input type="password" id="password" placeholder="Password">
+<span class="eye" onclick="toggle()">👁</span>
+</div>
+
+<button onclick="login()">Login</button>
+
+<p>
+Don't have an account?
+<a href="signup.html">Signup</a>
+</p>
+
+</div>
+
+<script>
+
+function toggle(){
+
+let p=document.getElementById("password");
+
+if(p.type=="password")
+p.type="text";
+else
+p.type="password";
+
+}
+
+function login(){
+
+let email=document.getElementById("email").value.trim();
+
+let pass=document.getElementById("password").value.trim();
+
+let error=document.getElementById("error");
+
+let mail=/^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
+
+if(email==""){
+error.innerHTML="Enter Email";
+return;
+}
+
+if(!mail.test(email)){
+error.innerHTML="Invalid Email";
+return;
+}
+
+if(pass.length<6){
+error.innerHTML="Password must be at least 6 characters";
+return;
+}
+
+window.location="dashboard.html";
+
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Signup</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Segoe UI,sans-serif;
+}
+
+body{
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+background:linear-gradient(135deg,#00c6ff,#0072ff,#00d2ff);
+}
+
+.container{
+width:420px;
+padding:40px;
+background:white;
+border-radius:20px;
+box-shadow:0 10px 25px rgba(0,0,0,.3);
+}
+
+h1{
+text-align:center;
+margin-bottom:25px;
+color:#0072ff;
+}
+
+input{
+width:100%;
+padding:14px;
+margin:10px 0;
+border-radius:10px;
+border:1px solid #ccc;
+font-size:16px;
+}
+
+button{
+width:100%;
+padding:14px;
+background:#0072ff;
+border:none;
+color:white;
+font-size:18px;
+border-radius:10px;
+cursor:pointer;
+}
+
+button:hover{
+background:#0048c7;
+}
+
+.error{
+color:red;
+margin-bottom:10px;
+}
+
+p{
+text-align:center;
+margin-top:20px;
+}
+
+a{
+text-decoration:none;
+}
+
+</style>
+
+</head>
+<body>
+
+<div class="container">
+
+<h1>Create Account</h1>
+
+<div id="error" class="error"></div>
+
+<input type="text" id="name" placeholder="Full Name">
+
+<input type="email" id="email" placeholder="Email">
+
+<input type="password" id="pass" placeholder="Password">
+
+<input type="password" id="cpass" placeholder="Confirm Password">
+
+<button onclick="signup()">Signup</button>
+
+<p>
+
+Already have account?
+
+<a href="login.html">Login</a>
+
+</p>
+
+</div>
+
+<script>
+
+function signup(){
+
+let name=document.getElementById("name").value.trim();
+
+let email=document.getElementById("email").value.trim();
+
+let pass=document.getElementById("pass").value;
+
+let cpass=document.getElementById("cpass").value;
+
+let error=document.getElementById("error");
+
+let mail=/^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
+
+let strong=/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).{8,}$/;
+
+if(name==""){
+error.innerHTML="Enter Name";
+return;
+}
+
+if(!mail.test(email)){
+error.innerHTML="Invalid Email";
+return;
+}
+
+if(!strong.test(pass)){
+error.innerHTML="Password must contain Uppercase, Lowercase, Number and minimum 8 characters";
+return;
+}
+
+if(pass!=cpass){
+error.innerHTML="Passwords do not match";
+return;
+}
+
+alert("Signup Successful");
+
+window.location="login.html";
+
+}
+
+</script>
+
+</body>
+</html>
