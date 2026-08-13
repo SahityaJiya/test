@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        :root{--bg1:#0f172a;--bg2:#0b1220;--accent:#7c3aed;--accent-rgba:124,58,237;--glass:rgba(255,255,255,0.06);--muted:rgba(255,255,255,0.7)}
+        body[data-theme="day"]{--bg-gradient:linear-gradient(120deg,#ffd89b 0%,#19547b 100%);--card-bg:linear-gradient(180deg,rgba(255,255,255,0.95),rgba(255,255,255,0.9));--text:#071026;--muted:rgba(7,16,38,0.6);--accent:#ff6b6b;--accent-rgba:255,107,107}
+        body[data-theme="night"]{--bg-gradient:linear-gradient(120deg,#0f172a 0%, #071029 50%, #08101f 100%);--card-bg:linear-gradient(180deg,rgba(255,255,255,0.03),transparent);--text:#e6eef8;--muted:rgba(255,255,255,0.7);--accent:#7c3aed;--accent-rgba:124,58,237}
+        /* default to night */
+        body{transition:background 450ms ease,color 450ms ease}
+        *{box-sizing:border-box;font-family:Inter,ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial}
+        html,body{height:100%;margin:0;background:var(--bg-gradient, linear-gradient(135deg,#081329 0%, #071029 35%, #08101f 100%));color:var(--text,#e6eef8);overflow-x:hidden}
+        .page-bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;background:radial-gradient(ellipse at bottom,#020111 0%, #00121a 50%);} 
+        .page-bg::before{content:'';position:absolute;inset:-20%;background:radial-gradient(circle at 10% 20%, rgba(120,86,255,0.06), transparent 8%),radial-gradient(circle at 80% 80%, rgba(90,200,255,0.04), transparent 10%);filter:blur(36px);transform:translateZ(0);animation:bgShift 14s linear infinite}
+        /* subtle stars */
+        .page-bg::after{content:'';position:absolute;inset:0;background-image:radial-gradient(#ffffff15 1px, transparent 1px);background-size:8px 8px;opacity:0.35;filter:blur(0.6px)}
+        .blob{position:absolute;border-radius:50%;filter:blur(60px);opacity:.8;mix-blend-mode:screen}
+        .b1{width:560px;height:560px;left:-12%;top:-8%;background:linear-gradient(120deg,#7b61ff,#4fd1c5);animation:drift1 12s ease-in-out infinite;opacity:0.9}
+        .b2{width:480px;height:480px;right:-10%;top:6%;background:linear-gradient(120deg,#3b82f6,#7c3aed);animation:drift2 14s ease-in-out infinite;opacity:0.85}
+        .b3{width:420px;height:420px;left:18%;bottom:-16%;background:linear-gradient(120deg,#06b6d4,#c084fc);animation:drift3 16s ease-in-out infinite;opacity:0.8}
+        .particle{position:absolute;width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,0.18);filter:blur(2px)}
+        .p1{left:40%;top:20%;animation:floatSmall 6s linear infinite}
+        .p2{left:70%;top:40%;animation:floatSmall 8s linear infinite}
+        .p3{left:20%;top:60%;animation:floatSmall 7s linear infinite}
+        .container{position:relative;z-index:2;min-height:100vh;display:grid;place-items:center;padding:50px}
+        .card{width:100%;max-width:1040px;background:var(--card-bg, linear-gradient(180deg,rgba(255,255,255,0.04),transparent));border-radius:18px;padding:30px;box-shadow:0 18px 60px rgba(2,6,23,0.5);display:grid;grid-template-columns:1fr 480px;gap:28px;align-items:start;animation:floatIn 520ms cubic-bezier(.2,.9,.2,1);opacity:0;animation-fill-mode:forwards}
+        .left{padding:24px}
+        .brand{display:flex;align-items:center;gap:12px}
+        .logo{width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#06b6d4);display:grid;place-items:center;font-weight:800;cursor:default;transition:transform 300ms ease, box-shadow 300ms ease;box-shadow:0 12px 40px rgba(7,10,30,0.45);animation:logoFloat 5s ease-in-out infinite}
+        .logo:hover{transform:rotate(-6deg) scale(1.05);box-shadow:0 18px 40px rgba(7,10,30,0.65)}
+        h1{margin:14px 0 6px;font-size:22px}
+        p.lead{color:var(--muted);margin:0 0 18px}
+        .features{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+        .feat{background:rgba(255,255,255,0.03);padding:10px 14px;border-radius:999px;font-size:13px;transition:transform 260ms ease,box-shadow 260ms ease;border:1px solid rgba(255,255,255,0.02)}
+        .feat:hover{transform:translateY(-6px);box-shadow:0 18px 40px rgba(2,6,23,0.45)}
+        /* Right column - forms */
+        .right{background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:26px;border-radius:14px;position:relative}
+        .themeToggle{position:absolute;right:12px;top:12px}
+        .themeBtn{width:44px;height:28px;border-radius:20px;border:0;background:linear-gradient(90deg,var(--accent),rgba(var(--accent-rgba),0.9));color:#041024;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,0.2);transition:transform 180ms ease}
+        .themeBtn:hover{transform:translateY(-3px)}
+        .tabs{display:flex;gap:8px;margin-bottom:12px}
+        .tab{flex:1;padding:10px;border-radius:10px;text-align:center;cursor:pointer;color:var(--muted);background:transparent;border:1px solid transparent;transition:transform 180ms ease,background 200ms ease,box-shadow 200ms ease}
+        .tab:hover{transform:translateY(-4px);box-shadow:0 8px 22px rgba(2,6,23,0.45)}
+        .tab.active{background:linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));border-color:rgba(255,255,255,0.04);color:#fff}
+        form{display:flex;flex-direction:column;gap:12px}
+        label{font-size:13px;color:var(--muted)}
+        input{padding:10px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit;font-size:14px;transition:box-shadow 180ms ease,transform 180ms ease}
+        input:focus{outline:none;box-shadow:0 8px 30px rgba(var(--accent-rgba),0.14);transform:translateY(-2px)}
+        .small{font-size:13px;color:#9fb3d8}
+        .row{display:flex;gap:10px}
+        .btn{padding:10px 14px;border-radius:10px;border:0;cursor:pointer;background:linear-gradient(90deg,var(--accent),#06b6d4);color:#041024;font-weight:600;transition:transform 180ms ease,box-shadow 180ms ease}
+        .btn:hover{transform:translateY(-4px) scale(1.02);box-shadow:0 18px 48px rgba(6,12,36,0.6)}
+        .ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);transition:background 160ms ease,transform 160ms ease}
+        .ghost:hover{background:rgba(255,255,255,0.02);transform:translateY(-3px)}
+        .muted{color:var(--muted);font-size:13px}
+        .error{color:#ffb4b4;font-size:13px}
+        .success{color:#b7f5d6;font-size:13px}
+        .hidden{display:none}
+        /* Dashboard */
+        .dashboard{padding:20px}
+        .card-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
+        .dash-card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:16px;border-radius:10px;transition:transform 260ms ease,box-shadow 260ms ease;border:1px solid rgba(255,255,255,0.02);cursor:default}
+        .dash-card:hover{transform:translateY(-10px);box-shadow:0 20px 50px rgba(2,6,23,0.6)}
+        /* portfolio */
+        .portfolio{display:flex;flex-direction:column;gap:12px}
+        .avatar{width:96px;height:96px;border-radius:20px;background:linear-gradient(135deg,var(--accent),#06b6d4);display:grid;place-items:center;font-weight:800;font-size:28px;color:#041024;box-shadow:0 12px 30px rgba(7,10,30,0.45)}
+        .bio{margin-top:8px;color:var(--muted);line-height:1.4}
+        .skills{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+        .skill{background:rgba(255,255,255,0.04);padding:8px 10px;border-radius:999px;font-size:13px}
+        .projects{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+        .project{padding:12px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);box-shadow:0 10px 30px rgba(2,6,23,0.35)}
+        footer{margin-top:18px;color:var(--muted);font-size:13px}
+        @media(max-width:900px){.card{grid-template-columns:1fr;}.card-grid{grid-template-columns:repeat(1,1fr)}}
+
+        /* Animations */
+        @keyframes floatIn{from{opacity:0;transform:translateY(10px) scale(.995);}to{opacity:1;transform:none}}
+        @keyframes logoFloat{0%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-6px) rotate(2deg)}100%{transform:translateY(0) rotate(-1deg)}}
+        @keyframes bgShift{0%{transform:translateY(0) scale(1)}50%{transform:translateY(-6%) scale(1.06)}100%{transform:translateY(0) scale(1)}}
+        @keyframes drift1{0%{transform:translateY(0) translateX(0)}50%{transform:translateY(-30px) translateX(20px)}100%{transform:translateY(0) translateX(0)}}
+        @keyframes drift2{0%{transform:translateY(0) translateX(0)}50%{transform:translateY(20px) translateX(-40px)}100%{transform:translateY(0) translateX(0)}}
+        @keyframes drift3{0%{transform:translateY(0) translateX(0)}50%{transform:translateY(-20px) translateX(30px)}100%{transform:translateY(0) translateX(0)}}
+        @keyframes floatSmall{0%{transform:translateY(0)}50%{transform:translateY(-18px)}100%{transform:translateY(0)}}
+        /* rotating words */
+        .rotate{display:inline-block;position:relative;height:22px;width:100px;vertical-align:middle}
+        .rotate span{position:absolute;left:0;right:0;top:0;opacity:0;transform:translateY(8px);display:inline-block;text-align:left}
+        .rotate span:nth-child(1){animation:rot 9s linear infinite 0s}
+        .rotate span:nth-child(2){animation:rot 9s linear infinite 3s}
+        .rotate span:nth-child(3){animation:rot 9s linear infinite 6s}
+        @keyframes rot{0%{opacity:0;transform:translateY(8px)}10%{opacity:1;transform:translateY(0)}30%{opacity:1}40%{opacity:0;transform:translateY(-8px)}100%{opacity:0}}
+    </style>
+</head>
+<body>
+    <div class="page-bg" aria-hidden="true">
+        <span class="blob b1"></span>
+        <span class="blob b2"></span>
+        <span class="blob b3"></span>
+        <span class="particle p1"></span>
+        <span class="particle p2"></span>
+        <span class="particle p3"></span>
+    </div>
+    <div class="container">
+        <div class="card">
+            <div class="left">
+                        <div class="brand">
+                            <div class="logo">AS</div>
+                            <div>
+                                <div style="font-weight:700">Awesome App</div>
+                                <div class="small">Simple, fast login & signup</div>
+                            </div>
+                        </div>
+                        <h1 style="display:flex;align-items:center;gap:10px">Welcome —
+                          <span style="font-weight:700;color:var(--accent);margin-left:6px">Awesome App</span>
+                        </h1>
+                        <p class="lead">Quick start with a clean, focused auth flow.</p>
+                        <p style="margin-top:14px;font-size:18px">Get started: <span class="rotate" aria-hidden="true"><span>Explore</span><span>Create</span><span>Enjoy</span></span></p>
+                        <footer>Made with care · No backend required</footer>
+            </div>
+
+            <div class="right">
+                        <div class="themeToggle"><button id="themeBtn" class="themeBtn" onclick="toggleTheme()" title="Toggle theme">🌙</button></div>
+                        <div class="tabs">
+                            <div id="tab-login" class="tab active" onclick="show('login')">Login</div>
+                            <div id="tab-signup" class="tab" onclick="show('signup')">Sign Up</div>
+                        </div>
+
+                <div id="box-login">
+                    <form id="loginForm" onsubmit="loginSubmit(event)">
+                        <div>
+                            <label for="loginEmail">Email</label>
+                            <input id="loginEmail" type="email" placeholder="you@example.com" required>
+                        </div>
+                        <div>
+                            <label for="loginPassword">Password</label>
+                            <input id="loginPassword" type="password" placeholder="Password" minlength="8" required>
+                        </div>
+                        <div class="row" style="align-items:center">
+                            <button type="submit" class="btn">Sign in</button>
+                            <button type="button" class="ghost" onclick="fillDemo()">Use Demo</button>
+                        </div>
+                        <div id="loginMsg" class="muted"></div>
+                    </form>
+                </div>
+
+                <div id="box-signup" class="hidden">
+                    <form id="signupForm" onsubmit="signupSubmit(event)">
+                        <div id="signupFields">
+                            <div>
+                                <label for="fullName">Full name</label>
+                                <input id="fullName" type="text" placeholder="Jane Doe" required>
+                            </div>
+                            <div>
+                                <label for="phone">Phone</label>
+                                <input id="phone" type="tel" placeholder="+1234567890" pattern="\+?[0-9\s-]{7,20}" required>
+                            </div>
+                            <div>
+                                <label for="email">Email</label>
+                                <input id="email" type="email" placeholder="you@example.com" required>
+                            </div>
+                            <div>
+                                <label for="password">Password</label>
+                                <input id="password" type="password" placeholder="At least 8 characters" minlength="8" required>
+                                <div id="pwHelp" class="small muted">Use 8+ chars, letters and numbers.</div>
+                            </div>
+                            <div>
+                                <label for="confirm">Confirm password</label>
+                                <input id="confirm" type="password" placeholder="Repeat password" required>
+                            </div>
+                            <div class="row">
+                                <button type="submit" class="btn">Create account</button>
+                                <button type="button" class="ghost" onclick="show('login')">Back</button>
+                            </div>
+                        </div>
+                        <div id="signupMsg" class="muted"></div>
+
+                        <div id="otpBox" class="hidden" style="margin-top:12px">
+                            <div class="small muted" id="otpInfo">We sent an OTP to <span id="otpPhone"></span></div>
+                            <div style="margin-top:8px">
+                                <label for="otpInput">Enter OTP</label>
+                                <input id="otpInput" type="text" inputmode="numeric" pattern="[0-9]{6}" placeholder="123456">
+                            </div>
+                            <div class="row" style="margin-top:8px">
+                                <button type="button" class="btn" onclick="verifyOtp()">Verify OTP</button>
+                                <button type="button" class="ghost" onclick="resendOtp()">Resend</button>
+                            </div>
+                            <div id="otpMsg" class="muted small" style="margin-top:8px">If you don't receive SMS, the OTP is shown here for demo: <span id="otpReveal" class="small muted">-</span></div>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="dashboard" class="hidden dashboard">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:18px">
+                        <div style="flex:1;max-width:420px">
+                            <div class="portfolio">
+                                <div style="display:flex;gap:14px;align-items:center">
+                                    <div id="avatar" class="avatar">A</div>
+                                    <div>
+                                        <div id="welcome" style="font-weight:800;font-size:20px">Hello, User</div>
+                                        <div class="small muted" id="userEmail">you@example.com</div>
+                                    </div>
+                                </div>
+                                <div id="bio" class="bio">This is your portfolio home. Add a bio on signup.</div>
+                                <div class="skills" id="skills"></div>
+                            </div>
+                        </div>
+
+                        <div style="flex:2">
+                            <div style="display:flex;justify-content:space-between;align-items:center">
+                                <div style="font-weight:700;font-size:18px">Projects</div>
+                                <div><button class="ghost" onclick="logout()">Logout</button></div>
+                            </div>
+                            <div class="projects" id="projects"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple client-side auth using localStorage for demo purposes
+        const usersKey = 'app_users_v1';
+        const sessionKey = 'app_session_v1';
+        const themeKey = 'app_theme_v1';
+
+        function readUsers(){try{return JSON.parse(localStorage.getItem(usersKey)||'{}')}catch(e){return {}}}
+        function writeUsers(u){localStorage.setItem(usersKey,JSON.stringify(u))}
+        function setSession(email){localStorage.setItem(sessionKey,email)}
+        function clearSession(){localStorage.removeItem(sessionKey)}
+        function getSession(){return localStorage.getItem(sessionKey)}
+
+        async function saveToBackend(type,data){
+            try{
+                const response = await fetch(`/api/${type}`, {
+                    method:'POST',
+                    headers:{'Content-Type':'application/json'},
+                    body:JSON.stringify(data)
+                });
+                const result = await response.json().catch(()=>({}));
+                if(!response.ok) throw new Error(result.message || 'Save failed');
+                return result;
+            }catch(error){
+                console.warn('Backend save failed, using local storage fallback:', error);
+                return null;
+            }
+        }
+
+        // create demo user if none (includes portfolio fields)
+        (function ensureDemo(){
+            const u=readUsers();
+            if(!u['demo@example.com']){
+                u['demo@example.com']={
+                    name:'Demo User',
+                    title:'Frontend Engineer',
+                    bio:'I build beautiful interfaces and delightful user experiences.',
+                    email:'demo@example.com',
+                    password:'Password123',
+                    skills:['HTML','CSS','JS','Design'],
+                    projects:[
+                        {title:'Nice Portfolio',desc:'A responsive portfolio built with HTML/CSS.',link:'#'},
+                        {title:'Animated UI Kit',desc:'Reusable components and micro-animations.',link:'#'}
+                    ]
+                };
+                writeUsers(u);
+            }
+        })()
+
+        function resetOtpFlow(){
+            const otpBox=document.getElementById('otpBox');
+            if(otpBox) otpBox.classList.add('hidden');
+            const otpInput=document.getElementById('otpInput');
+            if(otpInput) otpInput.value='';
+            const otpMsg=document.getElementById('otpMsg');
+            if(otpMsg){otpMsg.className='muted';otpMsg.textContent="Demo OTP shown here; real SMS is not sent in this page-only demo.";}
+            const signupMsg=document.getElementById('signupMsg');
+            if(signupMsg) signupMsg.textContent='';
+            const signupFields=document.getElementById('signupFields');
+            if(signupFields) signupFields.classList.remove('hidden');
+        }
+
+        function show(which){document.getElementById('tab-login').classList.toggle('active', which==='login');document.getElementById('tab-signup').classList.toggle('active', which==='signup');
+            document.getElementById('box-login').classList.toggle('hidden', which!=='login');
+            document.getElementById('box-signup').classList.toggle('hidden', which!=='signup');
+            document.getElementById('dashboard').classList.add('hidden');
+            resetOtpFlow();
+        }
+
+        function fillDemo(){document.getElementById('loginEmail').value='demo@example.com';document.getElementById('loginPassword').value='Password123'}
+
+        // Theme handling
+        function applyTheme(t){document.body.setAttribute('data-theme',t);const btn=document.getElementById('themeBtn');if(!btn) return;btn.textContent = t==='day' ? '☀️' : '🌙';
+            // tweak accent colors for theme to make blobs pop
+            if(t==='day'){document.documentElement.style.setProperty('--accent','#ff6b6b');document.documentElement.style.setProperty('--accent-rgba','255,107,107')}else{document.documentElement.style.setProperty('--accent','#7c3aed');document.documentElement.style.setProperty('--accent-rgba','124,58,237')}
+        }
+        function toggleTheme(){const current = localStorage.getItem(themeKey) || 'night';const next = current==='night' ? 'day' : 'night';localStorage.setItem(themeKey,next);applyTheme(next)}
+        (function initTheme(){const saved = localStorage.getItem(themeKey) || 'night';applyTheme(saved)})();
+
+        // Parallax mouse for blobs
+        (function initParallax(){const blobs = document.querySelectorAll('.page-bg .blob');let lastX=0,lastY=0;window.addEventListener('mousemove',e=>{const x = (e.clientX/window.innerWidth - 0.5)*30;const y = (e.clientY/window.innerHeight - 0.5)*30;blobs.forEach((b,i)=>{const depth = (i+1)*6;const tx = x/depth;const ty = y/depth;b.style.transform = `translate3d(${tx}px,${ty}px,0)`});lastX=x;lastY=y})})();
+
+        async function signupSubmit(e){e.preventDefault();const name=document.getElementById('fullName').value.trim();const email=document.getElementById('email').value.trim().toLowerCase();const pw=document.getElementById('password').value;const conf=document.getElementById('confirm').value;const msg=document.getElementById('signupMsg');msg.className='muted';
+            const phone = document.getElementById('phone').value.trim();
+            if(pw.length<8){msg.className='error';msg.textContent='Password must be at least 8 characters.';return}
+            if(pw!==conf){msg.className='error';msg.textContent='Passwords do not match.';return}
+            const users=readUsers();if(users[email]){msg.className='error';msg.textContent='An account with this email already exists.';return}
+            // start OTP flow: store pending signup in sessionStorage
+            const pending = {name,email,phone,password:pw,createdAt:Date.now()};
+            sessionStorage.setItem('pending_signup_v1',JSON.stringify(pending));
+            await saveToBackend('signup', pending);
+            sendOtp(phone);
+            showOtpBox(phone);
+        }
+
+        function sendOtp(phone){
+            const cleanDigits = (phone.match(/\d/g) || []).join('');
+            const otp = cleanDigits.slice(-4) || Math.floor(1000 + Math.random()*9000).toString();
+            const payload = {otp,phone,expires:Date.now()+5*60*1000};
+            sessionStorage.setItem('pending_otp_v1',JSON.stringify(payload));
+            // for demo show OTP in UI and console; real SMS delivery requires backend/SMS API
+            const reveal = document.getElementById('otpReveal'); if(reveal) reveal.textContent = otp;
+            const info = document.getElementById('otpInfo'); if(info) info.textContent = `Your OTP is the last 4 digits of ${maskPhone(phone)}`;
+            console.log('Demo OTP for', phone, otp);
+        }
+
+        function showOtpBox(phone){
+            document.getElementById('signupMsg').textContent='Your OTP is the last 4 digits of your phone number. Enter it below to complete signup.';
+            document.getElementById('otpPhone').textContent = maskPhone(phone);
+            const signupFields=document.getElementById('signupFields');
+            if(signupFields) signupFields.classList.add('hidden');
+            document.getElementById('otpBox').classList.remove('hidden');
+        }
+
+        function maskPhone(p){if(!p) return '';return p.replace(/.(?=.{4})/g,'*')}
+
+        function verifyOtp(){const box = sessionStorage.getItem('pending_otp_v1');const input = document.getElementById('otpInput').value.trim();const msg = document.getElementById('otpMsg');msg.className='muted';
+            if(!box){msg.className='error';msg.textContent='No OTP pending. Please resend.';return}
+            const data = JSON.parse(box);if(Date.now()>data.expires){msg.className='error';msg.textContent='OTP expired. Please resend.';return}
+            if(input!==data.otp){msg.className='error';msg.textContent='Invalid OTP.';return}
+            // create user from pending signup
+            const pending = JSON.parse(sessionStorage.getItem('pending_signup_v1')||'null');if(!pending){msg.className='error';msg.textContent='Signup data missing.';return}
+            const users = readUsers();users[pending.email] = {name:pending.name,email:pending.email,phone:pending.phone,password:pending.password,bio:pending.bio||'',skills:pending.skills||[],projects:pending.projects||[]};writeUsers(users);
+            // clear pending
+            sessionStorage.removeItem('pending_otp_v1');sessionStorage.removeItem('pending_signup_v1');
+            setSession(pending.email);
+            msg.className='success';msg.textContent='Phone verified — account created. Redirecting...';
+            setTimeout(()=>renderDashboard(),700);
+        }
+
+        function resendOtp(){const p = sessionStorage.getItem('pending_signup_v1');const msg=document.getElementById('otpMsg');if(!p){msg.className='error';msg.textContent='No pending signup found.';return}const pending=JSON.parse(p);sendOtp(pending.phone);msg.className='muted';msg.textContent='OTP resent.'}
+
+        async function loginSubmit(e){e.preventDefault();const email=document.getElementById('loginEmail').value.trim().toLowerCase();const pw=document.getElementById('loginPassword').value;const msg=document.getElementById('loginMsg');msg.className='muted';
+            const users=readUsers();if(!users[email]||users[email].password!==pw){msg.className='error';msg.textContent='Invalid email or password.';return}
+            await saveToBackend('login', {email, password:pw});
+            setSession(email);msg.className='success';msg.textContent='Login successful — redirecting...';setTimeout(()=>renderDashboard(),500);
+        }
+
+        function renderDashboard(){
+            const email=getSession();
+            if(!email) return show('login');
+            const users=readUsers();
+            const user=users[email]||{name:'User',email};
+            // show full name in greeting + populate portfolio
+            document.getElementById('welcome').textContent = user.name || user.email;
+            document.getElementById('userEmail').textContent = user.email;
+            document.getElementById('bio').textContent = user.bio || 'Add a short bio about yourself.';
+            // avatar initial
+            document.getElementById('avatar').textContent = (user.name||user.email).charAt(0).toUpperCase();
+            // skills
+            const skillsEl = document.getElementById('skills');skillsEl.innerHTML='';(user.skills||[]).forEach(s=>{const el=document.createElement('div');el.className='skill';el.textContent=s;skillsEl.appendChild(el)});
+            // projects
+            const projEl = document.getElementById('projects');projEl.innerHTML='';(user.projects||[]).forEach(p=>{const card=document.createElement('div');card.className='project';card.innerHTML=`<div style="font-weight:700">${p.title}</div><div class="small muted" style="margin-top:8px">${p.desc}</div><div style="margin-top:10px"><a href="${p.link}" class="btn" style="padding:8px 10px;font-size:13px">View</a></div>`;projEl.appendChild(card)});
+            document.getElementById('box-login').classList.add('hidden');
+            document.getElementById('box-signup').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+        }
+
+        function logout(){clearSession();document.getElementById('loginForm').reset();document.getElementById('signupForm').reset();document.getElementById('loginMsg').textContent='';document.getElementById('signupMsg').textContent='';show('login')}
+
+        // on load, show dashboard if session exists
+        window.addEventListener('DOMContentLoaded',()=>{if(getSession()){renderDashboard()}else{show('login')}})
+    </script>
+</body>
+</html>
